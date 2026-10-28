@@ -1,0 +1,9 @@
+{
+  "law_id": "17103",
+  "chunk": "17103-3",
+  "model": "gemini-3.5-flash",
+  "input_tokens": 2634,
+  "output_tokens": 2010,
+  "thinking_tokens": 6103,
+  "total_tokens": 10747
+}

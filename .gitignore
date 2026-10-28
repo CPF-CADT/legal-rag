@@ -1,0 +1,48 @@
+# Existing local rule
+.ev
+
+# Python cache and build files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Environment and local configuration
+.env
+.env.*
+.edds
+*.local
+
+# Jupyter and tool caches
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Project-generated files
+ncdd_laws/
+ncdd_ocr/
+ncdd_ocr_pipeline/
+ncdd_ocr_khmerocr/
+ncdd_ocr_netra/
+ncdd_ocr_gemini/
+ncdd_ocr_openai/
+ncdd_ocr_tesseract/
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

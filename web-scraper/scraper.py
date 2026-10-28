@@ -82,6 +82,14 @@ async def fetch_page(page, url: str) -> BeautifulSoup:
     return BeautifulSoup(await page.content(), "html.parser")
 
 
+async def open_browser(playwright):
+    """Open a fresh browser and page for recovery after a browser crash."""
+
+    browser = await playwright.chromium.launch(headless=True)
+    page = await browser.new_page()
+    return browser, page
+
+
 def parse_records(soup: BeautifulSoup, page_number: int, base_url: str) -> dict[str, dict]:
     records = {}
     for link in soup.select("a[href]"):
@@ -171,8 +179,7 @@ def extract_metadata(soup: BeautifulSoup, record: dict, settings: dict) -> None:
 async def discover_records(settings: dict, documents: dict[str, dict], logger) -> None:
     failed_pages = []
     async with async_playwright() as playwright:
-        browser = await playwright.chromium.launch(headless=True)
-        page = await browser.new_page()
+        browser, page = await open_browser(playwright)
         try:
             first = await fetch_page(page, listing_url(settings, 1))
             expected = get_total(first)
@@ -216,6 +223,13 @@ async def discover_records(settings: dict, documents: dict[str, dict], logger) -
                             attempt + 1,
                             error,
                         )
+                        if "Target page, context or browser has been closed" in str(error):
+                            logger.warning("Playwright browser closed; restarting it before retry")
+                            try:
+                                await browser.close()
+                            except Exception:
+                                pass
+                            browser, page = await open_browser(playwright)
                         if attempt == settings["max_retries"] - 1:
                             logger.error("Giving up on listing page %s", page_number)
                             failed_pages.append(page_number)
@@ -295,8 +309,7 @@ async def download_records(settings: dict, documents: dict[str, dict], logger) -
             records_to_process = records_to_process[: settings["test_max_documents"]]
         logger.info("Test mode: processing %s document(s)", len(records_to_process))
     async with async_playwright() as playwright:
-        browser = await playwright.chromium.launch(headless=True)
-        page = await browser.new_page()
+        browser, page = await open_browser(playwright)
         try:
             for record in sorted(records_to_process, key=lambda item: item["document_id"]):
                 document_id = record["document_id"]
@@ -321,6 +334,13 @@ async def download_records(settings: dict, documents: dict[str, dict], logger) -
                             attempt + 1,
                             error,
                         )
+                        if "Target page, context or browser has been closed" in str(error):
+                            logger.warning("Playwright browser closed; restarting it before retry")
+                            try:
+                                await browser.close()
+                            except Exception:
+                                pass
+                            browser, page = await open_browser(playwright)
                         if attempt < settings["max_retries"] - 1:
                             await pause(settings)
                 save_documents(settings["checkpoint_path"], documents)

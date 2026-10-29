@@ -34,6 +34,23 @@ DOCUMENT_FIELDS = [
     "updated_at",
 ]
 
+KHMER_RE = re.compile(r"[\u1780-\u17FF]")
+LATIN_RE = re.compile(r"[A-Za-z]")
+
+
+def infer_language(text: str) -> str:
+    """Classify a title as Khmer, English, mixed, or unknown."""
+
+    has_khmer = bool(KHMER_RE.search(text))
+    has_latin = bool(LATIN_RE.search(text))
+    if has_khmer and has_latin:
+        return "Mixed"
+    if has_khmer:
+        return "Khmer"
+    if has_latin:
+        return "English"
+    return "Unknown"
+
 
 def now_utc() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -104,6 +121,7 @@ def parse_records(soup: BeautifulSoup, page_number: int, base_url: str) -> dict[
             "title": title,
             "detail_url": href,
             "category_id": str(page_number),
+            "language": infer_language(title),
             "status": "discovered",
             "retry_count": "0",
             "updated_at": now_utc(),
@@ -168,7 +186,7 @@ def extract_metadata(soup: BeautifulSoup, record: dict, settings: dict) -> None:
             "document_type": infer_document_type(title),
             "publication_year": years[-1] if years else "",
             "publication_date": date_match.group(1) if date_match else "",
-            "language": "Khmer",
+            "language": infer_language(title),
             "category_id": str(settings["category_id"]),
             "category": settings["category_name"],
             "updated_at": now_utc(),
@@ -248,6 +266,12 @@ async def process_record(record: dict, page, session: requests.Session, settings
     document_id = record["document_id"]
     destination = settings["pdf_dir"] / f"{document_id}.pdf"
     record["local_pdf_path"] = str(destination)
+    logger.info(
+        "Document %s language=%s title=%s",
+        document_id,
+        record.get("language", "Unknown"),
+        record.get("title", ""),
+    )
     if valid_pdf(destination):
         record.update(status="downloaded", error="", updated_at=now_utc())
         return
@@ -367,8 +391,12 @@ async def run(settings: dict) -> None:
     await discover_records(settings, documents, logger)
     await download_records(settings, documents, logger)
     counts = pd.Series([record.get("status", "unknown") for record in documents.values()]).value_counts()
+    language_counts = pd.Series(
+        [record.get("language", "Unknown") for record in documents.values()]
+    ).value_counts()
     logger.info("Scraper finished: %s documents", len(documents))
     logger.info("Statuses: %s", counts.to_dict())
+    logger.info("Languages: %s", language_counts.to_dict())
 
 
 def run_pipeline(settings: dict) -> None:

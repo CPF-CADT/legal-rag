@@ -24,8 +24,10 @@ export function StatePanel({ title, description, tone = 'neutral' }: { title: st
 export function LoadingPanel() { return <StatePanel title="កំពុងស្វែងរក…" description="សូមរង់ចាំបន្តិច។" /> }
 
 export function PdfLink({ url, label = 'បើក PDF ដើម' }: { url: string | null; label?: string }) {
-  if (!url) return <span className="text-sm text-slate-400">មិនមានតំណ PDF</span>
-  return <a href={url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sm font-semibold text-blue-700 hover:text-blue-900">↗ {label}</a>
+  let valid = false
+  try { valid = Boolean(url && ['http:', 'https:'].includes(new URL(url).protocol)) } catch { valid = false }
+  if (!valid) return <span className="text-sm text-slate-400">តំណប្រភពមិនអាចប្រើបាន</span>
+  return <a href={url || undefined} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sm font-semibold text-blue-700 hover:text-blue-900">↗ {label}</a>
 }
 
 export function SourceCard({ source }: { source: Citation }) {

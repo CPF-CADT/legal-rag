@@ -1,13 +1,4 @@
-import type {
-  ArticleResponse,
-  ChatMessageInput,
-  ChatResponse,
-  Citation,
-  LegalArticle,
-  SearchRequest,
-  SearchResult,
-  SearchResponse,
-} from '../types'
+import type { ApiClient, ChatMessageInput, Citation, LegalArticle, SearchResult } from '../types'
 
 const pdfUrl = 'https://library.ncdd.gov.kh/detail/1/download'
 const baseArticle = {
@@ -65,54 +56,36 @@ const toSearchResult = (article: LegalArticle, score: number | null): SearchResu
   score,
 })
 
-export async function searchArticles(request: SearchRequest): Promise<SearchResponse> {
-  await new Promise((resolve) => window.setTimeout(resolve, 350))
-  const query = normalize(request.query)
-  const matches = articles.filter((article) => {
-    if (request.filters?.articleNumber && article.articleNumber !== request.filters.articleNumber) return false
-    if (request.mode === 'exact_article') return article.articleNumber === request.filters?.articleNumber
-    if (!query) return true
-    return normalize(`${article.title} ${article.articleText}`).includes(query) ||
-      (query.includes('ប័ណ្ណ') && article.articleNumber === '8')
-  })
-  const items = matches.map((article, index) => toSearchResult(article, Math.max(0.96 - index * 0.08, 0.72)))
-  return {
-    query: request.query,
-    mode: request.mode,
-    items,
-    pagination: { page: 1, pageSize: 10, total: items.length, totalPages: 1 },
-    hasSufficientEvidence: items.length > 0,
-  }
-}
-
-export async function getArticle(documentId: string, articleNumber: string): Promise<ArticleResponse | null> {
-  await new Promise((resolve) => window.setTimeout(resolve, 250))
-  const index = articles.findIndex((article) => article.documentId === documentId && article.articleNumber === articleNumber)
-  if (index < 0) return null
-  return {
-    article: articles[index],
-    navigation: {
-      previousArticleNumber: articles[index - 1]?.articleNumber ?? null,
-      nextArticleNumber: articles[index + 1]?.articleNumber ?? null,
-    },
-  }
-}
-
-export async function askChat(message: string, _conversation: ChatMessageInput[] = []): Promise<ChatResponse> {
-  await new Promise((resolve) => window.setTimeout(resolve, 550))
-  const result = await searchArticles({ query: message, mode: 'semantic', page: 1, pageSize: 5 })
-  if (!result.hasSufficientEvidence) {
-    return {
-      answer: null,
-      sources: [],
-      hasSufficientEvidence: false,
-      insufficientEvidenceMessage: 'មិនមានប្រភពច្បាប់គ្រប់គ្រាន់សម្រាប់សំណួរនេះទេ។ សូមសាកល្បងប្រើពាក្យគន្លឹះផ្សេងទៀត។',
-    }
-  }
-  return {
-    answer: 'តាមមាត្រាដែលបានរកឃើញ អ្នកបើកបរយានយន្តប្រភេទដែលច្បាប់កំណត់ ត្រូវមានប័ណ្ណបើកបរ។ សូមអានប្រភពដើមសម្រាប់លក្ខខណ្ឌពេញលេញ។',
-    sources: result.items.slice(0, 2).map(toCitation),
-    hasSufficientEvidence: true,
-    insufficientEvidenceMessage: null,
-  }
+export const mockApiClient: ApiClient = {
+  async getLaws() {
+    const unique = articles.filter((article, index, list) => list.findIndex((item) => item.documentId === article.documentId) === index)
+    return { items: unique.map((article) => ({ documentId: article.documentId, documentType: article.documentType, documentNumber: article.documentNumber, title: article.title, issuedDate: article.issuedDate, pdfUrl: article.pdfUrl, reviewRequired: article.reviewRequired })), pagination: { page: 1, pageSize: 20, total: unique.length, totalPages: 1 } }
+  },
+  async getArticle(documentId, articleNumber) {
+    await new Promise((resolve) => window.setTimeout(resolve, 250))
+    const index = articles.findIndex((article) => article.documentId === documentId && article.articleNumber === articleNumber)
+    if (index < 0) return null
+    return { article: articles[index], navigation: { previousArticleNumber: articles[index - 1]?.articleNumber ?? null, nextArticleNumber: articles[index + 1]?.articleNumber ?? null } }
+  },
+  async search(request) {
+    await new Promise((resolve) => window.setTimeout(resolve, 350))
+    const query = normalize(request.query)
+    const matches = articles.filter((article) => {
+      if (request.filters?.articleNumber && article.articleNumber !== request.filters.articleNumber) return false
+      if (request.filters?.documentType && article.documentType !== request.filters.documentType) return false
+      if (request.filters?.documentTitle && !normalize(article.title).includes(normalize(request.filters.documentTitle))) return false
+      if (request.filters?.chapterNumber && article.chapterNumber !== request.filters.chapterNumber) return false
+      if (request.mode === 'exact_article') return article.articleNumber === request.filters?.articleNumber
+      if (!query) return true
+      return normalize(`${article.title} ${article.articleText}`).includes(query) || (query.includes('ប័ណ្ណ') && article.articleNumber === '8')
+    })
+    const items = matches.map((article, index) => toSearchResult(article, Math.max(0.96 - index * 0.08, 0.72)))
+    return { query: request.query, mode: request.mode, items, pagination: { page: 1, pageSize: 10, total: items.length, totalPages: 1 }, hasSufficientEvidence: items.length > 0 }
+  },
+  async chat(message: string, _conversation: ChatMessageInput[] = []) {
+    await new Promise((resolve) => window.setTimeout(resolve, 550))
+    const result = await this.search({ query: message, mode: 'semantic', page: 1, pageSize: 5 })
+    if (!result.hasSufficientEvidence) return { answer: null, sources: [], hasSufficientEvidence: false, insufficientEvidenceMessage: 'មិនមានប្រភពច្បាប់គ្រប់គ្រាន់សម្រាប់សំណួរនេះទេ។ សូមសាកល្បងប្រើពាក្យគន្លឹះផ្សេងទៀត។' }
+    return { answer: 'តាមមាត្រាដែលបានរកឃើញ អ្នកបើកបរយានយន្តប្រភេទដែលច្បាប់កំណត់ ត្រូវមានប័ណ្ណបើកបរ។ សូមអានប្រភពដើមសម្រាប់លក្ខខណ្ឌពេញលេញ។', sources: result.items.slice(0, 2).map(toCitation), hasSufficientEvidence: true, insufficientEvidenceMessage: null }
+  },
 }

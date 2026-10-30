@@ -41,6 +41,7 @@ export interface Pagination {
 export interface SearchFilters {
   documentId?: Id | null
   documentType?: string | null
+  documentTitle?: string | null
   chapterNumber?: string | null
   sectionNumber?: string | null
   articleNumber?: string | null
@@ -86,4 +87,36 @@ export interface ArticleResponse {
     previousArticleNumber: string | null
     nextArticleNumber: string | null
   }
+}
+
+export interface LawSummary extends Pick<LegalSource, 'documentId' | 'documentType' | 'documentNumber' | 'title' | 'issuedDate' | 'pdfUrl' | 'reviewRequired'> {}
+
+export interface LawsQuery {
+  page?: number
+  pageSize?: number
+  documentType?: string
+  query?: string
+}
+
+export interface LawsResponse {
+  items: LawSummary[]
+  pagination: Pagination
+}
+
+export interface ApiError {
+  code: string
+  message: string
+  details?: Record<string, unknown>
+  requestId?: string
+}
+
+export interface ApiErrorResponse {
+  error: ApiError
+}
+
+export interface ApiClient {
+  getLaws(query?: LawsQuery): Promise<LawsResponse>
+  getArticle(documentId: string, articleNumber: string): Promise<ArticleResponse | null>
+  search(request: SearchRequest): Promise<SearchResponse>
+  chat(message: string, conversation?: ChatMessageInput[], filters?: SearchFilters): Promise<ChatResponse>
 }

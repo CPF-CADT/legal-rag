@@ -79,10 +79,11 @@ sudo -u "$APP_USER" "$VENV_PATH/bin/pip" install \
   google-genai
 sudo -u "$APP_USER" "$VENV_PATH/bin/playwright" install chromium
 
-ln -sfn "$MOUNT_POINT" "$APP_ROOT/data"
-chown -h "$APP_USER:$APP_USER" "$APP_ROOT/data"
+mkdir -p "$APP_ROOT/data-pipeline"
+ln -sfn "$MOUNT_POINT" "$APP_ROOT/data-pipeline/data"
+chown -h "$APP_USER:$APP_USER" "$APP_ROOT/data-pipeline/data"
 
-mkdir -p "$APP_ROOT/web-scraper" "$APP_ROOT/ocr-process" "$APP_ROOT/infra"
+mkdir -p "$APP_ROOT/react-client" "$APP_ROOT/bot" "$APP_ROOT/data-pipeline/collection" "$APP_ROOT/data-pipeline/ocr-process" "$APP_ROOT/data-pipeline/automation-process/download" "$APP_ROOT/data-pipeline/automation-process/ocr" "$APP_ROOT/data-pipeline/transformation" "$APP_ROOT/data-pipeline/cleaning" "$APP_ROOT/data-pipeline/testable" "$APP_ROOT/infra"
 chown -R "$APP_USER:$APP_USER" "$APP_ROOT"
 
 echo "LegalRAG infrastructure setup completed."

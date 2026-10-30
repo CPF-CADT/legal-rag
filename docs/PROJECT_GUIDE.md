@@ -16,7 +16,30 @@ Terraform infrastructure for AWS:
 
 Terraform state files contain infrastructure information and should not be committed publicly.
 
-### `web-scraper/`
+### `react-client/`
+
+The React frontend.
+
+### `bot/`
+
+The Telegram bot application. This folder is reserved for bot code.
+
+### `data-pipeline/`
+
+All collection, OCR, transformation, cleaning, runtime data, tests, and exploratory notebooks live here.
+
+- `collection/` — collection notebooks and references.
+- `ocr-process/` — OCR notebooks and references.
+- `automation-process/download/` — runnable NCDD scraper and downloader.
+- `automation-process/ocr/` — runnable OCR processor, Gemini client, and key manager.
+- `transformation/` — lexicon and derived-data transformations.
+- `cleaning/` — document classification and file organization utilities.
+- `data/` — PDFs, OCR output, checkpoints, logs, and temporary pipeline data.
+- `testable/` — notebooks and Python tests. Notebooks are kept directly in this folder.
+
+The collection code saves PDFs and checkpoints under `data-pipeline/data/`.
+
+### `data-pipeline/automation-process/download/`
 
 Downloads documents from the NCDD website.
 
@@ -24,9 +47,7 @@ Downloads documents from the NCDD website.
 - `scraper.py` — discovers document records, reads metadata, and coordinates downloads.
 - `downloader.py` — downloads and validates PDF files.
 
-The scraper saves PDFs and its CSV checkpoint under `data/` when run from the project.
-
-### `ocr-process/`
+### `data-pipeline/automation-process/ocr/`
 
 Extracts text from downloaded PDFs using Gemini.
 
@@ -35,18 +56,19 @@ Extracts text from downloaded PDFs using Gemini.
 - `gemini_client.py` — Gemini API client.
 - `key_manager.py` — rotates rate-limited keys and disables invalid keys.
 
-Put `keys.txt` in the project root, beside `ocr-process/`:
+Put `keys.txt` in the project root, beside `data-pipeline/`:
 
 ```text
 legal-rag/
 ├── keys.txt
-├── ocr-process/
-└── web-scraper/
+├── data-pipeline/
+├── react-client/
+└── bot/
 ```
 
 Use one Gemini API key per line. Never commit this file.
 
-### `data/`
+### `data-pipeline/data/`
 
 Runtime data stored on the EBS volume in production:
 
@@ -58,32 +80,25 @@ Runtime data stored on the EBS volume in production:
 - `checkpoints/` — CSV files used for resume and recovery.
 - `logs/` — scraper and OCR logs.
 
-### `tests/`
+### `data-pipeline/testable/`
 
-Tests for checkpoint handling, retry behavior, and crash recovery.
-
-### `ipynb/`
-
-Older exploratory notebooks for downloading and testing OCR approaches.
-
-### `temp/`
-
-Temporary helper scripts, such as English-document counting and PDF moving tools.
+General experiments and Python tests. Stage-specific notebooks are kept beside their stage:
+collection notebooks in `collection/`, OCR notebooks in `ocr-process/`, and article transformation in `transformation/`.
 
 ## Pipeline flow
 
 ```text
 NCDD website
     ↓
-web-scraper
+data-pipeline/automation-process/download
     ↓
-data/pdfs/
+data-pipeline/data/pdfs/
     ↓
-ocr-process splits PDFs into ten-page batches
+data-pipeline/automation-process/ocr splits PDFs into ten-page batches
     ↓
 Gemini OCR with key rotation
     ↓
-data/ocr/text/
+data-pipeline/data/ocr/text/
 ```
 
 ## Running the scraper
@@ -91,13 +106,13 @@ data/ocr/text/
 From the project root:
 
 ```bash
-python3 web-scraper/main.py
+python3 data-pipeline/automation-process/download/main.py
 ```
 
 The scraper records document status in:
 
 ```text
-data/checkpoints/documents.csv
+data-pipeline/data/checkpoints/documents.csv
 ```
 
 It skips valid PDFs that already exist and retries failed downloads.
@@ -107,14 +122,14 @@ It skips valid PDFs that already exist and retries failed downloads.
 From the project root:
 
 ```bash
-python3 ocr-process/main.py
+python3 data-pipeline/automation-process/ocr/main.py
 ```
 
 OCR resumes from its CSV checkpoints and does not create final text for incomplete documents.
 
 ## EC2 storage
 
-In production, `data/` should point to the mounted EBS volume. This keeps PDFs, OCR output, checkpoints, and logs available after restarting the EC2 instance.
+In production, `data-pipeline/data/` should point to the mounted EBS volume. This keeps PDFs, OCR output, checkpoints, and logs available after restarting the EC2 instance.
 
 ## Important safety rules
 

@@ -6,29 +6,15 @@ Infrastructure will be implemented last. First, build and test the complete Pyth
 
 ```text
 legal-rag/
-├── web-scraper/
-│   ├── main.py
-│   ├── scraper.py
-│   └── downloader.py
-│
-├── ocr-process/
-│   ├── main.py
-│   ├── processor.py
-│   ├── gemini_client.py
-│   └── key_manager.py
-│
-├── data/
-│   ├── pdfs/
-│   ├── ocr/
-│   │   ├── chunks/
-│   │   ├── chunk_text/
-│   │   ├── text/
-│   │   └── usage/
-│   ├── checkpoints/
-│   │   ├── documents.csv
-│   │   ├── ocr_batches.csv
-│   │   └── api_keys.csv
-│   └── logs/
+├── react-client/
+├── bot/
+├── data-pipeline/
+│   ├── collection/
+│   ├── ocr-process/
+│   ├── transformation/
+│   ├── cleaning/
+│   ├── data/
+│   └── testable/
 │
 ├── keys.txt
 └── PROMT.md
@@ -38,11 +24,11 @@ The application will use pure Python scripts, direct configuration inside the sc
 
 ## Phase 1: Prepare the Python project
 
-Create the application folders and direct configuration sections in:
+Use the existing application folders and direct configuration sections in:
 
 ```text
-web-scraper/main.py
-ocr-process/main.py
+data-pipeline/automation-process/download/main.py
+data-pipeline/automation-process/ocr/main.py
 ```
 
 Configuration will include:

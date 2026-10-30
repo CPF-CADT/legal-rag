@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Noto Sans Khmer', system-ui, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; }
+button, input, textarea, select { font: inherit; }
+a { text-decoration: none; }
+.chat-scrollbar::-webkit-scrollbar { width: 8px; }
+.chat-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 999px; }

@@ -91,6 +91,9 @@ export const mockApiClient: ApiClient = {
     await new Promise((resolve) => window.setTimeout(resolve, 550))
     const result = await this.search({ query: message, mode: 'semantic', page: 1, pageSize: 5 })
     if (!result.hasSufficientEvidence) return { answer: null, sources: [], hasSufficientEvidence: false, insufficientEvidenceMessage: 'មិនមានប្រភពច្បាប់គ្រប់គ្រាន់សម្រាប់សំណួរនេះទេ។ សូមសាកល្បងប្រើពាក្យគន្លឹះផ្សេងទៀត។' }
-    return { answer: 'តាមមាត្រាដែលបានរកឃើញ អ្នកបើកបរយានយន្តប្រភេទដែលច្បាប់កំណត់ ត្រូវមានប័ណ្ណបើកបរ។ សូមអានប្រភពដើមសម្រាប់លក្ខខណ្ឌពេញលេញ។', sources: result.items.slice(0, 2).map(toCitation), hasSufficientEvidence: true, insufficientEvidenceMessage: null }
+    const answer = normalize(message).includes('៨') || normalize(message).includes('ប័ណ្ណ')
+      ? 'សួស្តី! តាមប្រភពដែលខ្ញុំរកឃើញ អ្នកបើកបរយានយន្តប្រភេទដែលច្បាប់កំណត់ ត្រូវមានប័ណ្ណបើកបរ។ ខ្ញុំបានភ្ជាប់មាត្រាដែលពាក់ព័ន្ធខាងក្រោម ដើម្បីឱ្យអ្នកអាចពិនិត្យអត្ថបទដើមបាន។'
+      : 'ខ្ញុំបានរកឃើញប្រភពច្បាប់ដែលពាក់ព័ន្ធនឹងសំណួររបស់អ្នក។ សូមមើលមាត្រាខាងក្រោម ហើយបើក PDF ដើម ប្រសិនបើអ្នកចង់ពិនិត្យព័ត៌មានលម្អិត។'
+    return { answer, sources: result.items.slice(0, 2).map(toCitation), hasSufficientEvidence: true, insufficientEvidenceMessage: null }
   },
 }

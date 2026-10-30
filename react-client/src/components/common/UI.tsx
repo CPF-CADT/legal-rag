@@ -30,7 +30,19 @@ export function PdfLink({ url, label = 'បើក PDF ដើម' }: { url: strin
   return <a href={url || undefined} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sm font-semibold text-blue-700 hover:text-blue-900">↗ {label}</a>
 }
 
-export function SourceCard({ source }: { source: Citation }) {
+function pdfDisplayName(url: string | null) {
+  if (!url) return 'Original PDF'
+  try {
+    const basename = decodeURIComponent(new URL(url).pathname.split('/').filter(Boolean).pop() ?? '')
+    return !basename || basename.toLowerCase() === 'download' ? 'Original PDF' : basename
+  } catch {
+    return 'Original PDF'
+  }
+}
+
+export function SourceCard({ source, compact = false }: { source: Citation; compact?: boolean }) {
+  if (compact) return <article className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"><p className="text-sm font-semibold text-slate-900">{source.title}</p><div className="mt-2"><PdfLink url={source.pdfUrl} label={pdfDisplayName(source.pdfUrl)} /></div></article>
+
   return <article className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
     <div className="flex flex-wrap items-start justify-between gap-3">
       <div><p className="text-xs font-semibold uppercase tracking-wide text-blue-700">ប្រភពយោង</p><h3 className="mt-1 font-semibold text-slate-900">{source.title}</h3></div>

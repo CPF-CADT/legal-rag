@@ -6,6 +6,7 @@ const baseArticle = {
   documentType: 'Law',
   documentNumber: null,
   title: 'ច្បាប់ស្តីពីចរាចរណ៍ផ្លូវគោក (វិសោធនកម្ម)',
+  category: 'ចរាចរណ៍',
   issuedDate: '2017-01-26',
   chapterNumber: null,
   chapterTitle: null,
@@ -74,13 +75,17 @@ export const mockApiClient: ApiClient = {
       if (request.filters?.articleNumber && article.articleNumber !== request.filters.articleNumber) return false
       if (request.filters?.documentType && article.documentType !== request.filters.documentType) return false
       if (request.filters?.documentTitle && !normalize(article.title).includes(normalize(request.filters.documentTitle))) return false
+      if (request.filters?.category && article.category !== request.filters.category) return false
       if (request.filters?.chapterNumber && article.chapterNumber !== request.filters.chapterNumber) return false
       if (request.mode === 'exact_article') return article.articleNumber === request.filters?.articleNumber
       if (!query) return true
       return normalize(`${article.title} ${article.articleText}`).includes(query) || (query.includes('ប័ណ្ណ') && article.articleNumber === '8')
     })
-    const items = matches.map((article, index) => toSearchResult(article, Math.max(0.96 - index * 0.08, 0.72)))
-    return { query: request.query, mode: request.mode, items, pagination: { page: 1, pageSize: 10, total: items.length, totalPages: 1 }, hasSufficientEvidence: items.length > 0 }
+    const page = Math.max(request.page ?? 1, 1)
+    const pageSize = Math.max(request.pageSize ?? 10, 1)
+    const start = (page - 1) * pageSize
+    const items = matches.slice(start, start + pageSize).map((article, index) => toSearchResult(article, Math.max(0.96 - (start + index) * 0.08, 0.72)))
+    return { query: request.query, mode: request.mode, items, pagination: { page, pageSize, total: matches.length, totalPages: Math.max(Math.ceil(matches.length / pageSize), 1) }, hasSufficientEvidence: matches.length > 0 }
   },
   async chat(message: string, _conversation: ChatMessageInput[] = []) {
     await new Promise((resolve) => window.setTimeout(resolve, 550))

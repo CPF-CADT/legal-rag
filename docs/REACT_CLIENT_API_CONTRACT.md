@@ -5,7 +5,7 @@ This document defines the browser-facing TypeScript contracts for the React clie
 The CSV currently contains these source fields:
 
 ```text
-document_id, document_type, document_number, title, issued_date,
+document_id, document_type, document_number, title, category, issued_date,
 sequence, record_type, chapter_number, chapter_title, section_number,
 section_title, article_number, article_text, pdf_url, local_pdf_path,
 source_text_path, review_required, review_reason
@@ -29,6 +29,7 @@ export interface LegalSource {
   documentType: string | null;
   documentNumber: string | null;
   title: string;
+  category: string | null;
   issuedDate: string | null; // ISO date when known; otherwise null
   chapterNumber: string | null;
   chapterTitle: string | null;
@@ -102,6 +103,7 @@ interface LawSummary {
   documentType: string | null;
   documentNumber: string | null;
   title: string;
+  category: string | null;
   issuedDate: string | null;
   pdfUrl: string | null;
   reviewRequired: boolean;
@@ -163,6 +165,8 @@ Searches legal articles. Retrieval must exclude `recordType = "preamble"`; pream
 interface SearchFilters {
   documentId?: Id | null;
   documentType?: string | null;
+  documentTitle?: string | null;
+  category?: string | null;
   chapterNumber?: string | null;
   sectionNumber?: string | null;
   articleNumber?: string | null;

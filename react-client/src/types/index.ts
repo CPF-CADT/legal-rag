@@ -8,6 +8,7 @@ export interface LegalSource {
   documentType: string | null
   documentNumber: string | null
   title: string
+  category: string | null
   issuedDate: string | null
   chapterNumber: string | null
   chapterTitle: string | null
@@ -42,6 +43,7 @@ export interface SearchFilters {
   documentId?: Id | null
   documentType?: string | null
   documentTitle?: string | null
+  category?: string | null
   chapterNumber?: string | null
   sectionNumber?: string | null
   articleNumber?: string | null

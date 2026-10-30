@@ -9,8 +9,8 @@ export function Header() {
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
         <Link to="/" className="flex items-center gap-2 text-xl font-bold tracking-tight text-blue-800"><span className="grid h-9 w-9 place-items-center rounded-lg bg-blue-700 text-sm text-white">LR</span>LegalRAG</Link>
         <nav aria-label="Main navigation" className="flex items-center gap-1">
-          <NavLink to="/search" className={navClass}>ស្វែងរក</NavLink>
-          <NavLink to="/chat" className={navClass}>សួរសំណួរ</NavLink>
+          <NavLink to="/" end className={navClass}>សួរសំណួរ</NavLink>
+          <NavLink to="/search" className={navClass}>ស្វែងរកច្បាប់</NavLink>
         </nav>
       </div>
     </header>

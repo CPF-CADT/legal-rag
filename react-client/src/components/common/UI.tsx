@@ -41,7 +41,7 @@ function pdfDisplayName(url: string | null) {
 }
 
 export function SourceCard({ source, compact = false }: { source: Citation; compact?: boolean }) {
-  if (compact) return <article className="rounded-xl border border-slate-200 bg-white p-4"><div className="flex items-center gap-3"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-slate-100 text-xs font-bold text-slate-600">↗</span><p className="min-w-0 truncate text-sm font-semibold text-slate-900">{source.title}</p></div><div className="mt-3 pl-11"><PdfLink url={source.pdfUrl} label={pdfDisplayName(source.pdfUrl)} /></div></article>
+  if (compact) return <article className="min-w-0 rounded-xl border border-slate-200 bg-white p-3 sm:p-4"><div className="flex min-w-0 items-center gap-3"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-slate-100 text-xs font-bold text-slate-600">↗</span><p className="min-w-0 break-words text-sm font-semibold text-slate-900">{source.title}</p></div><div className="mt-3 pl-11"><PdfLink url={source.pdfUrl} label={pdfDisplayName(source.pdfUrl)} /></div></article>
 
   return <article className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
     <div className="flex flex-wrap items-start justify-between gap-3">

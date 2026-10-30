@@ -12,9 +12,5 @@
 body { margin: 0; min-width: 320px; }
 button, input, textarea, select { font: inherit; }
 a { text-decoration: none; }
-.chat-shell { background: radial-gradient(circle at 50% -10%, rgba(124, 58, 237, 0.2), transparent 40%), linear-gradient(145deg, #0b103b 0%, #17145c 45%, #2a1a72 100%); }
-.chat-panel { background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 255, 0.96)); }
-.brand-gradient { background: linear-gradient(135deg, #4f46e5, #9333ea 58%, #ec4899); }
-.soft-glow { box-shadow: 0 18px 50px rgba(99, 102, 241, 0.22); }
 .chat-scrollbar::-webkit-scrollbar { width: 8px; }
-.chat-scrollbar::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.28); border-radius: 999px; }
+.chat-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 999px; }

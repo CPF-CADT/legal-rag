@@ -4,3 +4,5 @@ pandas
 playwright
 PyMuPDF
 google-genai
+chromadb
+sentencepiece

@@ -1,0 +1,122 @@
+[
+  {
+    "query_id": "q01",
+    "query": "បើខ្ញុំបើកបររថយន្តពេលស្រវឹង តើអាចត្រូវពិន័យ ឬទទួលទោសអ្វីខ្លះ?",
+    "expected_article_ids": ["1-77"],
+    "topic": "drunk driving"
+  },
+  {
+    "query_id": "q02",
+    "query": "តើច្បាប់ការពារស្នាដៃរបស់អ្នកនិពន្ធ និងអ្នកសម្តែងមានគោលបំណងអ្វី?",
+    "expected_article_ids": ["1006-1"],
+    "topic": "copyright protection"
+  },
+  {
+    "query_id": "q03",
+    "query": "តើការបោះឆ្នោតជ្រើសតាំងតំណាងរាស្ត្រត្រូវអនុវត្តតាមគោលការណ៍អ្វី?",
+    "expected_article_ids": ["1053-2"],
+    "topic": "parliamentary election principles"
+  },
+  {
+    "query_id": "q04",
+    "query": "តើការិយាល័យអន្តរជាតិមានភារកិច្ចអ្វីខ្លះក្នុងការគាំទ្រកិច្ចការពារសិទ្ធិអ្នកនិពន្ធ?",
+    "expected_article_ids": ["11169-24"],
+    "topic": "international bureau and copyright"
+  },
+  {
+    "query_id": "q05",
+    "query": "តើមន្ត្រីប្រតិបត្តិច្បាប់អាចទទួលអំណោយ ឬពាក់ព័ន្ធនឹងសំណូកបានដែរឬទេ?",
+    "expected_article_ids": ["12360-7"],
+    "topic": "corruption and gifts"
+  },
+  {
+    "query_id": "q06",
+    "query": "តើច្បាប់ព្រៃឈើមានគោលបំណងគ្រប់គ្រង និងអភិរក្សធនធានព្រៃឈើយ៉ាងដូចម្តេច?",
+    "expected_article_ids": ["1022-1", "1022-2"],
+    "topic": "forest law scope and purpose"
+  },
+  {
+    "query_id": "q07",
+    "query": "តើច្បាប់គណនេយ្យ និងសវនកម្មមានគោលបំណង និងវិសាលភាពអនុវត្តចំពោះអ្នកណាខ្លះ?",
+    "expected_article_ids": ["120-1", "120-3"],
+    "topic": "accounting and auditing scope"
+  },
+  {
+    "query_id": "q08",
+    "query": "តើកិច្ចសន្យាធានារ៉ាប់រងមានន័យដូចម្តេច ហើយក្រុមហ៊ុនត្រូវសងសំណងនៅពេលណា?",
+    "expected_article_ids": ["1128-3"],
+    "topic": "insurance contract"
+  },
+  {
+    "query_id": "q09",
+    "query": "តើការប្រើប្រាស់គ្រឿងញៀនខុសច្បាប់មានន័យដូចម្តេច?",
+    "expected_article_ids": ["1234-87"],
+    "topic": "drug-control definitions"
+  },
+  {
+    "query_id": "q10",
+    "query": "តើអង្គភាពអចិន្ត្រៃយ៍របស់ក្រសួងមហាផ្ទៃមានតួនាទីអ្វីក្នុងកិច្ចការរដ្ឋបាលមូលដ្ឋាន?",
+    "expected_article_ids": ["1078-59"],
+    "topic": "local administration secretariat"
+  },
+  {
+    "query_id": "q11",
+    "query": "តើព្រឹទ្ធសភាប្រជុំសាមញ្ញប៉ុន្មានដងក្នុងមួយឆ្នាំ ហើយរយៈពេលប្រជុំមានប៉ុន្មានខែ?",
+    "expected_article_ids": ["1149-1"],
+    "topic": "senate sessions"
+  },
+  {
+    "query_id": "q12",
+    "query": "តើច្បាប់កំណត់សមាសភាព និងសមត្ថកិច្ចរបស់គណៈរដ្ឋមន្ត្រីយ៉ាងដូចម្តេច?",
+    "expected_article_ids": ["11943-2"],
+    "topic": "council of ministers"
+  },
+  {
+    "query_id": "q13",
+    "query": "តើរដ្ឋបាលការងារមានន័យដូចម្តេចតាមអនុសញ្ញាការងារអន្តរជាតិ?",
+    "expected_article_ids": ["1143-1-2"],
+    "topic": "labour administration definition"
+  },
+  {
+    "query_id": "q14",
+    "query": "តើច្បាប់ប្រៃសណីយ៍គ្រប់គ្រងសេវាកម្ម និងអាជីវកម្មប្រភេទណាខ្លះ?",
+    "expected_article_ids": ["1061-1", "1061-3"],
+    "topic": "postal services scope"
+  },
+  {
+    "query_id": "q15",
+    "query": "តើអង្គជំនុំជម្រះវិសាមញ្ញត្រូវបានបង្កើតឡើងក្នុងគោលបំណងអ្វី?",
+    "expected_article_ids": ["1107-1"],
+    "topic": "extraordinary chambers purpose"
+  },
+  {
+    "query_id": "q16",
+    "query": "តើអ្នករាជការនៃក្រុមនីតិប្បញ្ញត្តិត្រូវគោរពគោលការណ៍អព្យាក្រឹតយ៉ាងដូចម្តេច?",
+    "expected_article_ids": ["1008-2"],
+    "topic": "legislative civil servants"
+  },
+  {
+    "query_id": "q17",
+    "query": "តើរបបសន្តិសុខសង្គមត្រូវបានបង្កើតឡើងសម្រាប់អ្នកណា និងផ្តល់អត្ថប្រយោជន៍អ្វីខ្លះ?",
+    "expected_article_ids": ["1055-1"],
+    "topic": "social security scheme"
+  },
+  {
+    "query_id": "q18",
+    "query": "តើកិច្ចព្រមព្រៀង TRIPS កំណត់ការប្រព្រឹត្តិកម្មជាតិលើកម្មសិទ្ធិបញ្ញាយ៉ាងដូចម្តេច?",
+    "expected_article_ids": ["11168-3"],
+    "topic": "TRIPS national treatment"
+  },
+  {
+    "query_id": "q19",
+    "query": "តើការិយាល័យអន្តរជាតិនៃសហភាពពិសេសមានភារកិច្ចរដ្ឋបាលអ្វីខ្លះ?",
+    "expected_article_ids": ["11160-3"],
+    "topic": "Stockholm supplementary act"
+  },
+  {
+    "query_id": "q20",
+    "query": "តើកិច្ចព្រមព្រៀងអន្តរជាតិនេះបង្កើតចំណាត់ថ្នាក់រួមសម្រាប់ប្រកាសនីយបត្រតក្កកម្មដែរឬទេ?",
+    "expected_article_ids": ["11165-1"],
+    "topic": "international patent classification"
+  }
+]

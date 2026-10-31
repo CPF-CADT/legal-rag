@@ -1,8 +1,8 @@
 # Semantic Search
 
-Phase 6 article-level search is implemented in `article-level/semantic_search.ipynb`. It embeds a Khmer user query with each configured model, then returns one combined result object for comparison.
+Phase 6 article-level search is implemented in `semantic_search.ipynb`. It embeds a Khmer user query with each configured model, then returns one combined result object for comparison.
 
-Open `article-level/semantic_search.ipynb` in VS Code after Phase 5 and select the project `.venv` kernel.
+Open `semantic_search.ipynb` in VS Code after Phase 5 and select the project `.venv` kernel.
 
 Change `query` to test another Khmer legal question. The notebook compares the `sealion` and `granite-r2` collections.
 
@@ -11,3 +11,9 @@ The output includes the rank, similarity distance, article text, article number,
 The chunk-level notebook searches small chunks for precision, then returns the complete parent article together with the matched chunk and official source links.
 
 The sentence-chunk notebook provides the same full-article flow using sentence-based chunks for comparison.
+
+All search notebooks are kept directly in this folder:
+
+- `semantic_search.ipynb` — article-level search.
+- `chunk_search.ipynb` — IBM-style recursive chunk search.
+- `sentence_chunk_search.ipynb` — sentence-based chunk search.

@@ -26,7 +26,7 @@ python3 data-pipeline/index-construction/prepare_articles.py
 Phase 2 normalization uses `articles.jsonl` and writes:
 
 ```text
-data/processed/search/articles_normalized.jsonl
+data/processed/articles_normalized.jsonl
 ```
 
 Phase 3 generates separate vector datasets for model comparison. All four models use the same input records, metadata alignment, normalization, and output format. The shared configuration and output contract are documented in `embedding_pipeline.ipynb`.
@@ -76,7 +76,7 @@ This step does not correct spelling, translate text, tokenize words, or change l
 Output:
 
 ```text
-data/processed/search/articles.jsonl
+data/processed/articles.jsonl
 ```
 
 Each record keeps the article text, document and article identifiers, chapter/section context, and official source URLs.

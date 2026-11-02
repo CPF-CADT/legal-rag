@@ -36,7 +36,7 @@ For the first version, we will focus on these three selected domains:
 
 ## 3. Team roles
 
-- **Phy Vathanak:** Crawling, data preprocess (pdf to text) and cleanning, and testing dense retrieval.
+- **Phy Vathanak:** Crawling, data preprocess (pdf to text) text embedning,  cleanning, and testing dense retrieval.
 - **Sat Panaha and Cheng Chanpanaha:** Data cleaning, Khmer tokenization, and BM25 retrieval.
 - **Choun Rothanak and Chhun Siv Heng:** Test with TF-IDF search implementation.
 - **All members:** Evaluate the search methods and decide whether to use the best method or a hybrid approach.

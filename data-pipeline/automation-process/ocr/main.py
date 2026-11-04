@@ -11,26 +11,26 @@ KEYS_FILE_NAME = "keys.txt"
 
 # Local smoke-test safety limits. Keep disabled for the full pipeline.
 LOCAL_TEST_MODE = False
-# Empty means: process the first downloaded document from documents.csv.
+# Empty means: process the first downloaded document from csv/checkpoint_documents.csv.
 LOCAL_TEST_DOCUMENT_ID = ""
 MAX_GEMINI_REQUESTS = 2
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 DATA_DIR = PROJECT_ROOT / "data-pipeline" / "data"
-PDF_DIR = DATA_DIR / "pdfs"
-OCR_DIR = DATA_DIR / "ocr"
+PDF_DIR = DATA_DIR / "raw" / "pdfs"
+OCR_DIR = DATA_DIR / "ocr" / "gemini"
 CHUNKS_DIR = OCR_DIR / "chunks"
-CHUNK_TEXT_DIR = OCR_DIR / "chunk_text"
+CHUNK_TEXT_DIR = OCR_DIR / "pages"
 TEXT_DIR = OCR_DIR / "text"
 USAGE_DIR = OCR_DIR / "usage"
-CHECKPOINT_DIR = DATA_DIR / "checkpoints"
+CSV_DIR = DATA_DIR / "csv"
 LOG_DIR = DATA_DIR / "logs"
 
 KEYS_PATH = PROJECT_ROOT / KEYS_FILE_NAME
-DOCUMENTS_CHECKPOINT = CHECKPOINT_DIR / "documents.csv"
-OCR_BATCHES_CHECKPOINT = CHECKPOINT_DIR / "ocr_batches.csv"
-API_KEYS_CHECKPOINT = CHECKPOINT_DIR / "api_keys.csv"
+DOCUMENTS_CHECKPOINT = CSV_DIR / "checkpoint_documents.csv"
+OCR_BATCHES_CHECKPOINT = CSV_DIR / "checkpoint_ocr_batches.csv"
+API_KEYS_CHECKPOINT = CSV_DIR / "checkpoint_api_keys.csv"
 LOG_PATH = LOG_DIR / "ocr.log"
 
 
@@ -43,7 +43,7 @@ def ensure_directories() -> None:
         CHUNK_TEXT_DIR,
         TEXT_DIR,
         USAGE_DIR,
-        CHECKPOINT_DIR,
+        CSV_DIR,
         LOG_DIR,
     ):
         directory.mkdir(parents=True, exist_ok=True)

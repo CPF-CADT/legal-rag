@@ -18,11 +18,11 @@ TEST_MAX_DOCUMENTS = 1
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 DATA_DIR = PROJECT_ROOT / "data-pipeline" / "data"
-PDF_DIR = DATA_DIR / "pdfs"
-CHECKPOINT_DIR = DATA_DIR / "checkpoints"
+PDF_DIR = DATA_DIR / "raw" / "pdfs"
+CSV_DIR = DATA_DIR / "csv"
 LOG_DIR = DATA_DIR / "logs"
 
-DOCUMENTS_CHECKPOINT = CHECKPOINT_DIR / "documents.csv"
+DOCUMENTS_CHECKPOINT = CSV_DIR / "checkpoint_documents.csv"
 LOG_PATH = LOG_DIR / "scraper.log"
 
 USER_AGENT = "LegalRAG NCDD research downloader (respectful rate limits)"
@@ -54,7 +54,7 @@ def get_settings() -> dict:
 def ensure_directories() -> None:
     """Create directories required by the scraper."""
 
-    for directory in (PDF_DIR, CHECKPOINT_DIR, LOG_DIR):
+    for directory in (PDF_DIR, CSV_DIR, LOG_DIR):
         directory.mkdir(parents=True, exist_ok=True)
 
 

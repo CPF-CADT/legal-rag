@@ -61,14 +61,14 @@ Reuse:
 The scraper will:
 
 1. Discover NCDD records.
-2. Save records to `documents.csv`.
+2. Save records to `data/csv/checkpoint_documents.csv`.
 3. Skip valid PDFs already downloaded.
 4. Download missing PDFs.
 5. Validate each PDF.
 6. Update the CSV after every document.
 7. Continue safely after individual failures.
 
-### `documents.csv`
+### `checkpoint_documents.csv`
 
 ```text
 document_id
@@ -100,23 +100,23 @@ Changes from the notebook:
 - Change chunk size from 9 pages to 10 pages.
 - Change paths to the new `data/` directories.
 - Replace the single API key with `keys.txt`.
-- Replace text-file-only checkpointing with `ocr_batches.csv`.
+- Replace text-file-only checkpointing with `data/csv/checkpoint_ocr_batches.csv`.
 - Save each batch result before continuing.
 - Create final document text only when all batches succeed.
 - Fix the usage log field separator bug.
 
 The OCR script will:
 
-1. Read downloaded PDFs from `documents.csv`.
+1. Read downloaded PDFs from `data/csv/checkpoint_documents.csv`.
 2. Split PDFs into 10-page chunks.
 3. Skip completed OCR batches.
 4. Send incomplete batches to Gemini.
 5. Save Khmer text.
 6. Save usage information.
-7. Update `ocr_batches.csv`.
+7. Update `data/csv/checkpoint_ocr_batches.csv`.
 8. Combine completed batches into one final text file.
 
-### `ocr_batches.csv`
+### `checkpoint_ocr_batches.csv`
 
 ```text
 document_id
@@ -235,9 +235,9 @@ Terraform will provision:
 2. Mount EBS as the data directory.
 3. Copy `keys.txt` securely.
 4. Run the scraper script.
-5. Review `documents.csv`.
+5. Review `data/csv/checkpoint_documents.csv`.
 6. Run the OCR script separately.
-7. Review `ocr_batches.csv`.
+7. Review `data/csv/checkpoint_ocr_batches.csv`.
 8. Confirm final Khmer text files.
 9. Process the complete NCDD collection.
 

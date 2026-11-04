@@ -112,7 +112,7 @@ python3 data-pipeline/automation-process/download/main.py
 The scraper records document status in:
 
 ```text
-data-pipeline/data/checkpoints/documents.csv
+data-pipeline/data/csv/checkpoint_documents.csv
 ```
 
 It skips valid PDFs that already exist and retries failed downloads.

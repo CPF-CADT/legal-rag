@@ -28,6 +28,16 @@ class AnswerResult:
     sources: list[dict[str, Any]]
     has_sufficient_evidence: bool
     usage: dict[str, int]
+    retrieved_context: str = ""
+
+
+class AnswerGenerationError(RuntimeError):
+    """LLM failure that preserves the retrieved RAG context for diagnostics."""
+
+    def __init__(self, cause: Exception, context: str, sources: list[dict[str, Any]]) -> None:
+        super().__init__(str(cause))
+        self.context = context
+        self.sources = sources
 
 
 DEFAULT_TEMPLATE_PATH = (
@@ -88,21 +98,25 @@ class AnswerService:
             return AnswerResult(INSUFFICIENT_EVIDENCE_MESSAGE, [], False, {})
 
         context = self.retriever.format_context(results)
-        answer = remove_inline_references(self.generator.generate(
-            build_prompt(question, context, self.prompt_template)
-        ))
+        try:
+            answer = remove_inline_references(self.generator.generate(
+                build_prompt(question, context, self.prompt_template)
+            ))
+        except Exception as exc:
+            raise AnswerGenerationError(exc, context, results) from exc
         if not answer:
-            return AnswerResult(INSUFFICIENT_EVIDENCE_MESSAGE, [], False, {})
+            return AnswerResult(INSUFFICIENT_EVIDENCE_MESSAGE, [], False, {}, context)
 
         # The model can determine that retrieved passages do not answer the
         # question even when the similarity threshold was met. Do not expose
         # those merely related passages as references in that case.
         if INSUFFICIENT_ANSWER_MARKER in answer:
-            return AnswerResult(answer, [], False, {})
+            return AnswerResult(answer, [], False, {}, context)
 
         return AnswerResult(
             answer,
             results,
             True,
             dict(getattr(self.generator, "last_usage", {}) or {}),
+            context,
         )

@@ -19,6 +19,8 @@ ENV/
 # Environment and local configuration
 .env
 bot/logs/
+bot/secrets/*.txt
+!bot/secrets/gemini_api_keys.txt.example
 .env.*
 .edds
 *.local

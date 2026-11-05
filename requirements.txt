@@ -5,5 +5,10 @@ playwright
 PyMuPDF
 google-genai
 chromadb
+numpy
+python-telegram-bot
+python-dotenv
+sentence-transformers
 sentencepiece
+transformers
 FlagEmbedding

@@ -18,6 +18,7 @@ ENV/
 
 # Environment and local configuration
 .env
+bot/logs/
 .env.*
 .edds
 *.local

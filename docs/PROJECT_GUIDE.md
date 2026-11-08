@@ -1,138 +1,107 @@
-# NCDD LegalRAG Project Guide
+# NCDD LegalRAG project guide
 
-This project downloads legal documents from the NCDD website and processes them with Gemini OCR.
+This guide describes the target project architecture and the current data
+workflow. See [ARCHITECTURE.md](ARCHITECTURE.md) for dependency rules.
 
 ## Main folders
 
-### `infra/`
+### `apps/core/`
 
-Terraform infrastructure for AWS:
+Shared Python code only: legal domain models and contracts used by both the API
+and Telegram bot. API-specific and Telegram-specific code stays in its app.
 
-- EC2 instance
-- EBS data volume
-- Security group
-- Server setup script
-- Terraform variables and outputs
+### `apps/`
 
-Terraform state files contain infrastructure information and should not be committed publicly.
+Runnable user-facing applications:
 
-### `react-client/`
+- `apps/api/` — FastAPI HTTP service.
+- `apps/telegram_bot/` — Telegram polling process and handlers.
+- `apps/react-client/` — React browser client.
 
-The React frontend.
+The applications consume `apps/core`; they do not access Chroma or pipeline
+files directly.
 
-### `bot/`
+### `pipelines/`
 
-The Telegram bot application. This folder is reserved for bot code.
+Repeatable data jobs for collection, OCR, preprocessing, embeddings, and
+indexing. Pipelines create the artifacts used by the applications.
 
-### `data-pipeline/`
+### `experiments/`
 
-All collection, OCR, transformation, cleaning, runtime data, tests, and exploratory notebooks live here.
+Jupyter notebooks and research code for retrieval, chunking, and evaluation.
+Current notebook groups are:
 
-- `collection/` — collection notebooks and references.
-- `ocr-process/` — OCR notebooks and references.
-- `automation-process/download/` — runnable NCDD scraper and downloader.
-- `automation-process/ocr/` — runnable OCR processor, Gemini client, and key manager.
-- `transformation/` — lexicon and derived-data transformations.
-- `cleaning/` — document classification and file organization utilities.
-- `data/` — PDFs, OCR output, checkpoints, logs, and temporary pipeline data.
-- `testable/` — notebooks and Python tests. Notebooks are kept directly in this folder.
+- `experiments/notebooks/pipeline/` — the numbered data-processing workflow.
+- `experiments/notebooks/dense_retrieval/` — dense-index experiments.
+- `experiments/notebooks/test/` — exploratory and evaluation notebooks.
 
-The collection code saves PDFs and checkpoints under `data-pipeline/data/`.
+Experiments may import reusable production code, but production code must not
+import notebooks or experiment modules.
 
-### `data-pipeline/automation-process/download/`
+### `data/`
 
-Downloads documents from the NCDD website.
+Runtime and generated artifacts:
 
-- `main.py` — direct scraper configuration and pipeline entry point.
-- `scraper.py` — discovers document records, reads metadata, and coordinates downloads.
-- `downloader.py` — downloads and validates PDF files.
+- `raw/` — downloaded source PDFs and source files.
+- `processed/` — OCR and normalized legal records.
+- `indexes/` — Chroma and other search indexes.
+- `evaluation/` — test fixtures and relevance judgments.
 
-### `data-pipeline/automation-process/ocr/`
+Do not commit credentials or provider keys under `data/`.
 
-Extracts text from downloaded PDFs using Gemini.
+### `tests/`
 
-- `main.py` — OCR configuration and entry point.
-- `processor.py` — splits PDFs into batches, sends requests, saves text, and resumes work.
-- `gemini_client.py` — Gemini API client.
-- `key_manager.py` — rotates rate-limited keys and disables invalid keys.
+Tests are organized by boundary: `unit/`, `integration/`, `api/`, and
+`frontend/`.
 
-Put `keys.txt` in the project root, beside `data-pipeline/`:
+### `deploy/`
 
-```text
-legal-rag/
-├── keys.txt
-├── data-pipeline/
-├── react-client/
-└── bot/
-```
+Dockerfiles, Compose files, environment templates, and deployment
+configuration. Deployment files point to application entry points and do not
+contain business logic.
 
-Use one Gemini API key per line. Never commit this file.
+## Current implementation note
 
-### `data-pipeline/data/`
+The application migration is in progress. The API now runs from
+`apps/api/`, reusable Python services live directly under `apps/core/`, the
+Telegram runtime is under `apps/telegram_bot/`, and the React client is under
+`apps/react-client/`. Notebook code has been moved to `experiments/notebooks/`.
+The existing `data-pipeline/` directory remains the pipeline compatibility
+location for executable pipeline modules and data artifacts until those jobs
+are migrated to `pipelines/`.
 
-Runtime data stored on the EBS volume in production:
+## Current pipeline flow
 
-- `pdfs/` — downloaded source PDFs.
-- `ocr/chunks/` — ten-page PDF batches.
-- `ocr/chunk_text/` — extracted text for each batch.
-- `ocr/text/` — final document text files.
-- `ocr/usage/` — Gemini usage records.
-- `checkpoints/` — CSV files used for resume and recovery.
-- `logs/` — scraper and OCR logs.
-
-### `data-pipeline/testable/`
-
-General experiments and Python tests. Stage-specific notebooks are kept beside their stage:
-collection notebooks in `collection/`, OCR notebooks in `ocr-process/`, and article transformation in `transformation/`.
-
-## Pipeline flow
+The existing pipeline remains:
 
 ```text
 NCDD website
     ↓
-data-pipeline/automation-process/download
+collection and download jobs
     ↓
-data-pipeline/data/pdfs/
+downloaded PDFs
     ↓
-data-pipeline/automation-process/ocr splits PDFs into ten-page batches
+Gemini OCR in page batches
     ↓
-Gemini OCR with key rotation
+cleaned and structured legal articles
     ↓
-data-pipeline/data/ocr/text/
+BGE-M3 embeddings and Chroma index
+    ↓
+API and Telegram applications
 ```
 
-## Running the scraper
+During the eventual migration, these stages belong under `pipelines/` and
+write artifacts under `data/`.
 
-From the project root:
+## Secrets and runtime data
 
-```bash
-python3 data-pipeline/automation-process/download/main.py
-```
+Use environment variables or mounted secret files for API keys. Keep secrets
+out of Git and out of public API responses. Bind-mounted PDFs, OCR output,
+checkpoints, logs, and Chroma indexes should be treated as runtime data and
+backed up independently from application source code.
 
-The scraper records document status in:
+## Migration rule
 
-```text
-data-pipeline/data/csv/checkpoint_documents.csv
-```
-
-It skips valid PDFs that already exist and retries failed downloads.
-
-## Running OCR
-
-From the project root:
-
-```bash
-python3 data-pipeline/automation-process/ocr/main.py
-```
-
-OCR resumes from its CSV checkpoints and does not create final text for incomplete documents.
-
-## EC2 storage
-
-In production, `data-pipeline/data/` should point to the mounted EBS volume. This keeps PDFs, OCR output, checkpoints, and logs available after restarting the EC2 instance.
-
-## Important safety rules
-
-- Do not run two scraper or OCR processes at the same time.
-- Check the logs before restarting a failed process.
-- Do not delete checkpoint CSV files unless you intentionally want to restart processing.
+Each remaining migration must update imports, entry points, Docker/Compose
+paths, tests, and documentation together, then verify the API, Telegram bot,
+and pipeline commands.

@@ -1,0 +1,30 @@
+{
+  "include": [
+    "apps",
+    "apps/core",
+    "data-pipeline"
+  ],
+  "exclude": [
+    "**/__pycache__",
+    "**/node_modules",
+    "data"
+  ],
+  "executionEnvironments": [
+    {
+      "root": "apps/api",
+      "extraPaths": [
+        "../core",
+        "../../data-pipeline",
+        "./apps/core"
+      ]
+    },
+    {
+      "root": "apps/telegram_bot",
+      "extraPaths": [
+        "../core",
+        "../../data-pipeline",
+        "../core"
+      ]
+    }
+  ]
+}

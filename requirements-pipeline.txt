@@ -1,0 +1,9 @@
+# Data collection, OCR, preprocessing, embedding, and index-building jobs.
+-r requirements.txt
+
+beautifulsoup4==4.15.0
+pandas==3.1.1
+playwright==1.64.1
+PyMuPDF==2.1
+transformers==5.22.2
+tqdm==4.70.1

@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
+import os
 from typing import Any
 
 import numpy as np
 
-from .config import PipelineConfig
+from apps.core.retrieval_config import PipelineConfig
 
 
 def build_index(
@@ -22,10 +23,18 @@ def build_index(
     # The notebook executes stages individually, so ensure the persistent
     # database directory exists even when the orchestration function was not used.
     config.create_output_dirs()
-    if not config.chroma_path.is_dir():
+    chroma_host = os.getenv("CHROMA_HOST", "").strip()
+    if not chroma_host and not config.chroma_path.is_dir():
         raise RuntimeError(f"Unable to create ChromaDB directory: {config.chroma_path}")
 
-    client = chromadb.PersistentClient(path=str(config.chroma_path))
+    if chroma_host:
+        client = chromadb.HttpClient(
+            host=chroma_host,
+            port=int(os.getenv("CHROMA_PORT", "8000")),
+            ssl=os.getenv("CHROMA_SSL", "false").lower() == "true",
+        )
+    else:
+        client = chromadb.PersistentClient(path=str(config.chroma_path))
     collection = client.get_or_create_collection(
         name=config.collection_name,
         metadata={"model": config.model_name, "hnsw:space": "cosine"},
@@ -47,7 +56,7 @@ def build_index(
         )
     return {
         "collection": config.collection_name,
-        "path": str(config.chroma_path),
+        "path": f"http://{chroma_host}:{os.getenv('CHROMA_PORT', '8000')}" if chroma_host else str(config.chroma_path),
         "stored_vectors": collection.count(),
         "dimension": int(vectors.shape[1]),
         "metric": "cosine",

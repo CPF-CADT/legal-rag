@@ -1,0 +1,11 @@
+# Jupyter and exploratory research dependencies.
+-r requirements-pipeline.txt
+
+jupyter==1.1.1
+ipykernel==7.4.0
+FlagEmbedding==1.4.2
+datasets==5.1.0
+khmercut==0.2.0
+khmer-nltk==1.6
+onnxruntime==1.31.1
+yt-dlp==2026.10.26

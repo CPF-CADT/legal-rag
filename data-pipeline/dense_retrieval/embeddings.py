@@ -7,7 +7,7 @@ from typing import Any
 
 import numpy as np
 
-from .config import PipelineConfig
+from apps.core.retrieval_config import PipelineConfig
 from .io_utils import write_jsonl
 
 

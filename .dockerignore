@@ -1,0 +1,14 @@
+.git
+.gitignore
+.env
+.env.*
+.venv
+__pycache__
+*.py[cod]
+*.ipynb_checkpoints
+apps/telegram-bot/logs
+apps/telegram-bot/secrets/*.txt
+data
+node_modules
+react-client/node_modules
+*.log

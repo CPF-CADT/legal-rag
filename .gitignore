@@ -18,10 +18,18 @@ ENV/
 
 # Environment and local configuration
 .env
-bot/logs/
-bot/secrets/*.txt
+apps/telegram-bot/logs/
+apps/telegram-bot/secrets/*.txt
+apps/telegram_bot/logs/
+apps/telegram_bot/secrets/*.txt
+apps/api/secrets/*.txt
+apps/telegram-bot/.env
+apps/telegram-bot/telegram_bot.pid
+apps/telegram_bot/.env
+apps/telegram_bot/telegram_bot.pid
 !bot/secrets/gemini_api_keys.txt.example
 .env.*
+!.env.example
 .edds
 *.local
 

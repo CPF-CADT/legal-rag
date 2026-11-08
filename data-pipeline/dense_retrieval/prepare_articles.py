@@ -5,10 +5,10 @@ import csv
 from pathlib import Path
 from typing import Any
 
-from .config import PipelineConfig
+from apps.core.retrieval_config import PipelineConfig
 from .io_utils import write_jsonl
 from .legal_parser import parse_document
-from .normalization import normalize_khmer
+from apps.core.shared.normalization import normalize_khmer
 
 def load_documents(path: Path) -> dict[str, dict[str, str]]:
     with path.open('r', encoding='utf-8-sig', newline='') as stream:

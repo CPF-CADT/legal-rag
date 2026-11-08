@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from typing import Any, Callable
 
-from .config import PipelineConfig
+from apps.core.retrieval_config import PipelineConfig
 from .io_utils import write_jsonl
 
 

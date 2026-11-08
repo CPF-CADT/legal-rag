@@ -1,0 +1,20 @@
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PYTHONPATH=/app:/app/apps/core:/app/data-pipeline
+
+WORKDIR /app
+
+COPY requirements-bot.txt /tmp/requirements-bot.txt
+RUN python -m pip install --no-cache-dir --upgrade pip \
+    && python -m pip install --no-cache-dir -r /tmp/requirements-bot.txt \
+    && rm -f /tmp/requirements-bot.txt
+
+COPY apps/telegram_bot /app/apps/telegram_bot
+COPY apps/core /app/apps/core
+
+RUN mkdir -p /app/apps/telegram_bot/logs
+
+CMD ["python", "-m", "apps.telegram_bot.main"]

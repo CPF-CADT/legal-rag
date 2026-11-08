@@ -9,8 +9,7 @@ sources.
 
 Cambodian legal information can be difficult to search manually because the
 documents are distributed across a large digital collection and may contain
-lengthy or scanned text. LegalRAG will serve users who need to find and verify
-legal information quickly.
+lengthy or scanned text. LegalRAG will serve users who need to find and verify legal information quickly.
 
 The search engine will support keyword and natural-language queries, retrieve
 relevant laws and articles, and link each result to its original source. A

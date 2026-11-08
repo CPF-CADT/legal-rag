@@ -6,7 +6,7 @@ from typing import Any
 
 from .chroma_index import build_index
 from .chunking import build_chunks
-from .config import PipelineConfig
+from apps.core.retrieval_config import PipelineConfig
 from .embeddings import embed_chunks
 from .prepare_articles import prepare_articles
 

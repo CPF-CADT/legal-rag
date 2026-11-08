@@ -1,0 +1,1 @@
+"""Runnable LegalRAG applications."""

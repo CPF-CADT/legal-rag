@@ -4,7 +4,7 @@ set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$PROJECT_ROOT"
-PID_FILE="bot/telegram_bot.pid"
+PID_FILE="apps/telegram_bot/telegram_bot.pid"
 
 if [[ ! -f "$PID_FILE" ]]; then
     echo "Bot is not running: PID file not found"
@@ -24,7 +24,7 @@ if ! kill -0 "$pid" 2>/dev/null; then
 fi
 
 process_command="$(ps -p "$pid" -o command= || true)"
-if [[ "$process_command" != *"bot/telegram_bot.py"* ]]; then
+if [[ "$process_command" != *"apps.telegram_bot.main"* ]]; then
     echo "Refusing to stop PID $pid because it is not the LegalRAG bot:" >&2
     echo "$process_command" >&2
     exit 1

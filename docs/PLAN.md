@@ -6,30 +6,35 @@ Infrastructure will be implemented last. First, build and test the complete Pyth
 
 ```text
 legal-rag/
-├── react-client/
-├── bot/
-├── data-pipeline/
-│   ├── collection/
-│   ├── ocr-process/
-│   ├── transformation/
-│   ├── cleaning/
-│   ├── data/
-│   └── testable/
-│
-├── keys.txt
-└── PROMT.md
+├── apps/core/
+├── apps/
+│   ├── api/
+│   ├── telegram-bot/
+│   └── react-client/
+├── pipelines/
+├── experiments/
+├── data/
+├── tests/
+├── deploy/
+└── docs/
 ```
 
-The application will use pure Python scripts, direct configuration inside the scripts, CSV checkpoints, and sequential processing.
+The target separates reusable application code from runnable apps, data
+pipelines, notebooks, runtime data, tests, and deployment. Notebooks now live
+under `experiments/notebooks/`; executable pipeline modules remain under
+`data-pipeline/` until the pipeline migration is completed.
 
 ## Phase 1: Prepare the Python project
 
-Use the existing application folders and direct configuration sections in:
+The current implementation entry points are documented here for reference:
 
-```text
-data-pipeline/automation-process/download/main.py
-data-pipeline/automation-process/ocr/main.py
-```
+Current entry points:
+
+- `data-pipeline/automation-process/download/main.py`
+- `data-pipeline/automation-process/ocr/main.py`
+
+After migration, these jobs belong under `pipelines/collection/` and
+`pipelines/ocr/`.
 
 Configuration will include:
 

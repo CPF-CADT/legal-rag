@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import re
 from typing import Any
-from .cleaning import clean_line, clean_multiline_text, clean_title, number_value, remove_page_number_lines, unicode_clean
+from apps.core.shared.cleaning import clean_line, clean_multiline_text, clean_title, number_value, remove_page_number_lines, unicode_clean
 
 NUM = r"[0-9០-៩]+"
 ARTICLE_WORD = r"(?:" + NUM + r"|មួយ|ពីរ|បី|បួន|ប្រាំ(?:មួយ|ពីរ|បី|បួន|ប្រាំ)?)"

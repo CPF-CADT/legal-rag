@@ -1,0 +1,8 @@
+# Lightweight production API runtime. Dense retrieval dependencies stay in requirements.txt
+# until the hybrid retrieval phase is enabled again.
+fastapi==0.162.2
+uvicorn[standard]==0.54.0
+khmer-viterbi-segmenter==0.3.2
+google-genai==3.0.0
+python-dotenv==1.2.4
+requests==2.34.2

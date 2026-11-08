@@ -54,9 +54,11 @@ class HybridRetriever:
             article_id = result["article_id"]
             item = fused.setdefault(article_id, {**result})
             item["hybrid_score"] = self.dense_weight * dense_normalized.get(article_id, 0.0) + self.bm25_weight * bm25_normalized.get(article_id, 0.0)
+            if result.get("bm25_score", 0) > item.get("bm25_score", 0):
+                item["bm25_score"] = result["bm25_score"]
             if result.get("best_similarity", 0) > item.get("best_similarity", 0):
                 item["best_similarity"] = result["best_similarity"]
-            if result.get("matched_chunks") and result.get("bm25_score", 0) > item.get("bm25_score", 0):
+            if result.get("matched_chunks") and result.get("bm25_score", 0) >= item.get("bm25_score", 0):
                 item["matched_chunks"] = result["matched_chunks"]
         ranked = sorted(fused.values(), key=lambda item: item["hybrid_score"], reverse=True)[:top_k]
         for rank, result in enumerate(ranked, start=1):

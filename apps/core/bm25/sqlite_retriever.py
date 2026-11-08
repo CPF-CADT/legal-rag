@@ -102,6 +102,7 @@ class BM25Retriever:
                 "answer_context": article.get("text", ""),
                 "article_text": article.get("text", ""),
                 "best_similarity": normalized,
+                "bm25_score": result["score"],
                 "matched_chunks": sorted(result["matches"].values(), key=lambda item: item["score"], reverse=True)[:2],
                 "source_url": article.get("source_url", ""),
                 "pdf_url": article.get("pdf_url", ""),

@@ -110,6 +110,11 @@ class GeminiTextGenerator:
                 if last_error is not None and self._is_rotatable_key_error(last_error):
                     if len(self._api_keys) == 1:
                         raise last_error
+                    # Give the provider a short recovery window before using
+                    # another key.  This is especially useful for 429/503
+                    # responses, which can be temporary per-key limits.
+                    if self.retry_backoff_seconds:
+                        time.sleep(self.retry_backoff_seconds)
                     self._rotate_key()
             raise RuntimeError("All Gemini API keys failed") from last_error
 
@@ -132,9 +137,10 @@ class GeminiTextGenerator:
     def _is_rotatable_key_error(error: Exception) -> bool:
         status_code = getattr(error, "status_code", None)
         message = str(error).upper()
-        return status_code in {401, 403} or any(marker in message for marker in (
+        return status_code in {401, 403, 429, 500, 502, 503, 504} or any(marker in message for marker in (
             "API_KEY_INVALID", "INVALID API KEY", "UNAUTHENTICATED", "PERMISSION_DENIED",
             "KEY HAS EXPIRED", "KEY IS EXPIRED", "KEY HAS BEEN REVOKED",
+            "RESOURCE_EXHAUSTED", "RATE_LIMIT", "TOO MANY REQUESTS", "UNAVAILABLE",
         ))
 
 

@@ -34,6 +34,7 @@ type ApiSearchItem = {
   rank: number
   article_id: string
   document_id: string
+  publication_date: string
   title: string
   article_number: string
   chapter_number: string
@@ -64,13 +65,13 @@ const toCitation = (item: ApiSearchItem): Citation => ({
   documentNumber: null,
   title: item.title,
   category: null,
-  issuedDate: null,
+  issuedDate: item.publication_date || null,
   chapterNumber: item.chapter_number || null,
   chapterTitle: item.chapter_title || null,
   sectionNumber: null,
   sectionTitle: null,
   articleNumber: item.article_number,
-  pdfUrl: item.pdf_url || item.source_url || null,
+  pdfUrl: item.source_url || item.pdf_url || null,
   sequence: item.rank,
   recordType: 'article',
   reviewRequired: false,

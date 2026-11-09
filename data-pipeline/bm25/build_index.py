@@ -6,12 +6,13 @@ import hashlib
 import json
 import os
 import sqlite3
+from collections import Counter
 from pathlib import Path
 
 from apps.core.retrieval_config import PipelineConfig
 
-from apps.core.bm25.constants import BM25_VERSION, TOKENIZER_VERSION
-from apps.core.bm25.tokenizer import indexable_chunk_text, tokenize
+from apps.core.bm25.constants import BM25_VERSION, HIGH_DF_RATIO, TOKENIZER_VERSION
+from apps.core.bm25.tokenizer import indexable_chunk_text, is_protected_token, tokenize
 
 
 def sha256(path: Path) -> str:
@@ -35,6 +36,7 @@ def build_index(config: PipelineConfig | None = None) -> Path:
         connection.executescript(
             """
             CREATE TABLE index_metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL);
+            CREATE TABLE filtered_terms (term TEXT PRIMARY KEY);
             CREATE TABLE documents (
                 row_id INTEGER PRIMARY KEY,
                 chunk_id TEXT NOT NULL UNIQUE,
@@ -45,31 +47,51 @@ def build_index(config: PipelineConfig | None = None) -> Path:
                 tokens,
                 content='documents',
                 content_rowid='row_id',
-                tokenize='unicode61'
+                tokenize='ascii'
             );
             """
         )
-        document_count = 0
+        chunks = []
         with config.chunk_path.open(encoding="utf-8") as stream:
-            for row_id, line in enumerate(stream, start=1):
+            for line in stream:
                 if not line.strip():
                     continue
                 chunk = json.loads(line)
-                connection.execute(
-                    "INSERT INTO documents(row_id, chunk_id, article_id, text) VALUES (?, ?, ?, ?)",
-                    (row_id, str(chunk["chunk_id"]), str(chunk["article_id"]), str(chunk.get("text", ""))),
-                )
-                connection.execute(
-                    "INSERT INTO documents_fts(rowid, tokens) VALUES (?, ?)",
-                    (row_id, " ".join(tokenize(indexable_chunk_text(chunk)))),
-                )
-                document_count += 1
+                chunks.append(chunk)
+
+        document_count = len(chunks)
+        document_frequency: Counter[str] = Counter()
+        token_rows = []
+        for chunk in chunks:
+            tokens = tokenize(indexable_chunk_text(chunk))
+            token_rows.append(tokens)
+            document_frequency.update(set(tokens))
+        high_df_terms = {
+            term
+            for term, frequency in document_frequency.items()
+            if frequency / document_count >= HIGH_DF_RATIO and not is_protected_token(term)
+        }
+        connection.executemany(
+            "INSERT INTO filtered_terms(term) VALUES (?)",
+            ((term,) for term in sorted(high_df_terms)),
+        )
+        for row_id, (chunk, tokens) in enumerate(zip(chunks, token_rows), start=1):
+            connection.execute(
+                "INSERT INTO documents(row_id, chunk_id, article_id, text) VALUES (?, ?, ?, ?)",
+                (row_id, str(chunk["chunk_id"]), str(chunk["article_id"]), str(chunk.get("text", ""))),
+            )
+            connection.execute(
+                "INSERT INTO documents_fts(rowid, tokens) VALUES (?, ?)",
+                (row_id, " ".join(token for token in tokens if token not in high_df_terms)),
+            )
         metadata = {
             "bm25_version": BM25_VERSION,
             "tokenizer_version": TOKENIZER_VERSION,
             "chunks_sha256": sha256(config.chunk_path),
             "articles_sha256": sha256(config.article_path),
             "document_count": str(document_count),
+            "high_df_ratio": str(HIGH_DF_RATIO),
+            "high_df_term_count": str(len(high_df_terms)),
             "k1": "1.5",
             "b": "0.75",
         }

@@ -35,6 +35,7 @@ class SearchItem(BaseModel):
     rank: int
     article_id: str
     document_id: str
+    publication_date: str
     title: str
     article_number: str
     chapter_number: str

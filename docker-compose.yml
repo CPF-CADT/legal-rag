@@ -65,7 +65,7 @@ services:
       dockerfile: Dockerfile.bot
     restart: unless-stopped
     env_file:
-      - path: apps/telegram-bot/.env
+      - path: apps/telegram_bot/.env
         required: false
     environment:
       LEGALRAG_API_URL: http://api:8000

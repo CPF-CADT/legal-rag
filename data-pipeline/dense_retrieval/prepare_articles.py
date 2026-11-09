@@ -14,10 +14,15 @@ def load_documents(path: Path) -> dict[str, dict[str, str]]:
     with path.open('r', encoding='utf-8-sig', newline='') as stream:
         return {str(row['document_id']).strip(): row for row in csv.DictReader(stream) if row.get('document_id')}
 
-def prepare_articles(config: PipelineConfig) -> list[dict[str, Any]]:
+def prepare_articles(
+    config: PipelineConfig,
+    ocr_paths: list[Path] | None = None,
+    extra_articles: list[dict[str, Any]] | None = None,
+) -> list[dict[str, Any]]:
     documents = load_documents(config.documents_csv)
     records: list[dict[str, Any]] = []
-    for text_path in sorted(config.ocr_dir.glob('*.txt'), key=lambda item: item.name):
+    paths = ocr_paths if ocr_paths is not None else list(config.ocr_dir.glob('*.txt'))
+    for text_path in sorted(paths, key=lambda item: item.name):
         document_id = text_path.stem
         document = documents.get(document_id)
         if document is None:
@@ -46,6 +51,7 @@ def prepare_articles(config: PipelineConfig) -> list[dict[str, Any]]:
                 'title': title,
                 'document_type': normalize_khmer(document.get('document_type', '')),
                 'domain': normalize_khmer(document.get('category', '')),
+                'publication_date': document.get('publication_date', '') or document.get('publication_year', ''),
                 'source_url': document.get('detail_url') or document.get('pdf_url', ''),
                 'pdf_url': document.get('pdf_url', ''),
                 'text_file': str(text_path),
@@ -54,5 +60,6 @@ def prepare_articles(config: PipelineConfig) -> list[dict[str, Any]]:
                 'search_text': normalize_khmer(f'{title}\n{article_number}\n{text}'),
                 'normalization_version': 'legal-cleaning-v1-khmer-normalization-v2',
             })
+    records.extend(extra_articles or [])
     write_jsonl(config.article_path, records)
     return records

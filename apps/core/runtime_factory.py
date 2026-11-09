@@ -8,13 +8,13 @@ from pathlib import Path
 from apps.core.answer_service import AnswerService
 from apps.core.config import env, env_bool, env_int
 from apps.core.retrieval_config import PipelineConfig
-from apps.core.bm25.sqlite_retriever import BM25Retriever
+from apps.core.dense.retriever import DenseRetriever
 from apps.core.llm_generator import GeminiTextGenerator, OpenRouterTextGenerator
 
 
 @dataclass(frozen=True)
 class RuntimeServices:
-    retriever: BM25Retriever
+    retriever: DenseRetriever
     answer_service: AnswerService
 
 
@@ -26,7 +26,7 @@ def build_runtime_services(
     min_similarity: float = 0.35,
 ) -> RuntimeServices:
     """Create one consistent runtime for both API and Telegram applications."""
-    retriever = BM25Retriever(
+    retriever = DenseRetriever(
         project_root=project_root,
         config=PipelineConfig(project_root=project_root),
     )

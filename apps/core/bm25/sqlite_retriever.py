@@ -47,6 +47,9 @@ class BM25Retriever:
             connection.close()
             raise RuntimeError("BM25 index is stale; rebuild it from the current corpus")
         self._connection = connection
+        self._filtered_terms = {
+            str(row[0]) for row in connection.execute("SELECT term FROM filtered_terms")
+        }
         self._articles = {
             str(article["article_id"]): article
             for article in (
@@ -62,7 +65,7 @@ class BM25Retriever:
         candidates: dict[str, dict[str, Any]] = {}
         limit = max(candidate_count * 3, top_k * 5)
         for variant in correct_query(query).variants:
-            tokens = tokenize(variant)
+            tokens = [token for token in tokenize(variant) if token not in self._filtered_terms]
             if not tokens:
                 continue
             match_query = " OR ".join(f'"{token.replace(chr(34), "")}"' for token in tokens)

@@ -14,6 +14,7 @@ def to_search_item(result: dict[str, Any]) -> SearchItem:
         rank=int(result.get("rank", 0)),
         article_id=str(result.get("article_id", "")),
         document_id=str(result.get("document_id", "")),
+        publication_date=str(result.get("publication_date", "")),
         title=str(result.get("title", "")),
         article_number=str(result.get("article_number", "")),
         chapter_number=str(result.get("chapter_number", "")),

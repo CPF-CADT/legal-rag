@@ -22,7 +22,7 @@ export function StatePanel({ title, description, tone = 'neutral' }: { title: st
 
 export function LoadingPanel() { return <StatePanel title="កំពុងស្វែងរក…" description="សូមរង់ចាំបន្តិច។" /> }
 
-export function PdfLink({ url, label = 'បើកឯកសារដើម' }: { url: string | null; label?: string }) {
+export function PdfLink({ url, label = 'បើកប្រភពដើម' }: { url: string | null; label?: string }) {
   let valid = false
   try { valid = Boolean(url && ['http:', 'https:'].includes(new URL(url).protocol)) } catch { valid = false }
   if (!valid) return <span className="text-sm text-slate-400">តំណប្រភពមិនអាចប្រើបាន</span>
@@ -40,12 +40,13 @@ function pdfDisplayName(url: string | null) {
 }
 
 export function SourceCard({ source, compact = false, showArticle = false }: { source: Citation; compact?: boolean; showArticle?: boolean }) {
-  if (compact) return <article className="min-w-0 rounded-xl border border-slate-200 bg-white p-3 sm:p-4"><div className="flex min-w-0 items-center gap-3"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-slate-100 text-xs font-bold text-slate-600">↗</span><p className="min-w-0 break-words text-sm font-semibold text-slate-900">{source.title}</p></div><div className="mt-3 pl-11"><PdfLink url={source.pdfUrl} label={pdfDisplayName(source.pdfUrl)} /></div></article>
+  const isNew = Boolean(source.issuedDate && source.issuedDate.slice(0, 4) >= String(new Date().getFullYear() - 2))
+  if (compact) return <article className="min-w-0 rounded-xl border border-slate-200 bg-white p-3 sm:p-4"><div className="flex min-w-0 items-start justify-between gap-3"><div className="flex min-w-0 items-center gap-3"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-slate-100 text-xs font-bold text-slate-600">↗</span><p className="min-w-0 break-words text-sm font-semibold text-slate-900">{source.title}</p></div>{isNew && <span className="shrink-0 rounded-full bg-emerald-100 px-2 py-1 text-xs font-semibold text-emerald-700">ថ្មី</span>}</div><div className="mt-3 pl-11"><PdfLink url={source.pdfUrl} label={pdfDisplayName(source.pdfUrl)} /></div></article>
 
   return <article className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
     <div className="flex flex-wrap items-center justify-between gap-3">
       <div><p className="text-xs font-semibold uppercase tracking-wide text-blue-700">ប្រភពយោង</p><h3 className="mt-1 font-semibold text-slate-900">{source.title}{source.articleNumber ? ` · មាត្រា ${source.articleNumber}` : ''}</h3></div>
-      <PdfLink url={source.pdfUrl} label="បើកឯកសារដើម" />
+      <div className="flex items-center gap-2">{isNew && <span className="rounded-full bg-emerald-100 px-2 py-1 text-xs font-semibold text-emerald-700">ថ្មី</span>}<PdfLink url={source.pdfUrl} label="បើកប្រភពដើម" /></div>
     </div>
     {showArticle && <div className="khmer-text mt-5 whitespace-pre-wrap border-t border-slate-100 pt-5 text-base leading-8 text-slate-800">{source.articleText}</div>}
   </article>

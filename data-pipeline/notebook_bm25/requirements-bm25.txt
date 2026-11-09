@@ -1,0 +1,11 @@
+# Index construction uses only the Python standard library.
+# These packages run and execute the notebook.
+nbformat>=5.9,<6
+nbclient>=0.10,<1
+ipykernel>=6.29,<8
+
+# Word segmentation: khmer-nltk is imported as khmernltk.
+khmercut==0.2.0
+khmer-nltk==1.6
+# Unicode-aware digit boundaries and the rule-based syllable alternative.
+regex>=2024.11.6

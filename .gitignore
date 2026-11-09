@@ -52,3 +52,6 @@ Thumbs.db
 .vscode/
 apikey.txt
 temp/
+
+# Generated BM25 indexes
+/data-pipeline/data/bm25/

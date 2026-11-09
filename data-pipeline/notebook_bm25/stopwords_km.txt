@@ -1,0 +1,17 @@
+# Short connective particles: remove common grammatical links, not obligations or negation.
+និង
+ហើយ
+ដែល
+# General prepositions: remove common links between phrases.
+នៃ
+នៅ
+ពី
+ដោយ
+ចំពោះ
+# Question words: remove generic question framing from later search queries.
+អ្វី
+ណា
+តើ
+ហេតុអ្វី
+ដូចម្តេច
+# Keep legal words such as ត្រូវ, មិន, ហាម, អាច, ឬ, សិទ្ធិ, កាតព្វកិច្ច, ច្បាប់, and មាត្រា.

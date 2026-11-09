@@ -12,8 +12,9 @@ from typing import Any
 from apps.core.retrieval_config import PipelineConfig
 from apps.core.shared.query_correction import correct_query
 
-from .constants import BM25_VERSION, TOKENIZER_VERSION
-from .tokenizer import tokenize
+from bm25.article_ids import assign_article_ids
+from bm25.constants import BM25_VERSION, TOKENIZER_VERSION
+from bm25.tokenizer import tokenize
 
 
 def sha256(path: Path) -> str:
@@ -35,7 +36,7 @@ class BM25Retriever:
         if self._connection is not None:
             return
         if not self.config.bm25_path.exists():
-            raise FileNotFoundError(f"BM25 index not found: {self.config.bm25_path}. Run bm25.build_index first.")
+            raise FileNotFoundError(f"BM25 index not found: {self.config.bm25_path}. Run bm25.pipeline first.")
         connection = sqlite3.connect(
             f"file:{self.config.bm25_path}?mode=ro", uri=True, check_same_thread=False
         )
@@ -43,20 +44,21 @@ class BM25Retriever:
         if metadata.get("bm25_version") != BM25_VERSION or metadata.get("tokenizer_version") != TOKENIZER_VERSION:
             connection.close()
             raise RuntimeError("BM25 index version is incompatible with the running code")
-        if metadata.get("chunks_sha256") != sha256(self.config.chunk_path) or metadata.get("articles_sha256") != sha256(self.config.article_path):
+        if metadata.get("index_unit") != "article" or metadata.get("articles_sha256") != sha256(self.config.article_path):
             connection.close()
             raise RuntimeError("BM25 index is stale; rebuild it from the current corpus")
         self._connection = connection
         self._filtered_terms = {
             str(row[0]) for row in connection.execute("SELECT term FROM filtered_terms")
         }
+        articles = [
+            json.loads(line)
+            for line in self.config.article_path.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
         self._articles = {
-            str(article["article_id"]): article
-            for article in (
-                json.loads(line)
-                for line in self.config.article_path.read_text(encoding="utf-8").splitlines()
-                if line.strip()
-            )
+            article_id: article
+            for article_id, article in zip(assign_article_ids(articles), articles)
         }
 
     def search(self, query: str, *, candidate_count: int = 100, top_k: int = 5) -> list[dict[str, Any]]:
@@ -72,7 +74,7 @@ class BM25Retriever:
             with self._lock:
                 rows = self._connection.execute(
                     """
-                    SELECT documents.chunk_id, documents.article_id, documents.text, bm25(documents_fts) AS rank_score
+                    SELECT documents.article_id, documents.text, bm25(documents_fts) AS rank_score
                     FROM documents_fts
                     JOIN documents ON documents.row_id = documents_fts.rowid
                     WHERE documents_fts MATCH ?
@@ -82,10 +84,10 @@ class BM25Retriever:
                     (match_query, limit),
                 ).fetchall()
             for row in rows:
-                score = -float(row[3])
-                current = candidates.setdefault(row[1], {"score": float("-inf"), "matches": {}})
+                score = -float(row[2])
+                current = candidates.setdefault(row[0], {"score": float("-inf"), "matches": {}})
                 current["score"] = max(current["score"], score)
-                current["matches"][row[0]] = {"chunk_id": row[0], "text": row[2], "score": score}
+                current["matches"][row[0]] = {"chunk_id": row[0], "text": row[1], "score": score}
 
         ranked = sorted(candidates.items(), key=lambda item: item[1]["score"], reverse=True)[:top_k]
         scores = [result["score"] for _, result in ranked]
@@ -106,7 +108,7 @@ class BM25Retriever:
                 "article_text": article.get("text", ""),
                 "best_similarity": normalized,
                 "bm25_score": result["score"],
-                "matched_chunks": sorted(result["matches"].values(), key=lambda item: item["score"], reverse=True)[:2],
+                "matched_chunks": sorted(result["matches"].values(), key=lambda item: item["score"], reverse=True)[:1],
                 "source_url": article.get("source_url", ""),
                 "pdf_url": article.get("pdf_url", ""),
                 "retrieval_method": "bm25",

@@ -4,10 +4,10 @@ Build the lexical artifacts from the current OCR corpus:
 
 ```bash
 cd /Users/nak/CADT/projects/legal-rag
-PYTHONPATH=data-pipeline .venv/bin/python -m bm25.build_pipeline
+PYTHONPATH=data-pipeline .venv/bin/python -m bm25.pipeline
 ```
 
-This creates `articles.jsonl`, `chunks.jsonl`, and `bm25.sqlite3` under
+This creates `articles.jsonl` and the article-level `bm25.sqlite3` under
 `data/dense_retrieval/`. The generated files are runtime data and are ignored
 by Git.
 
@@ -15,7 +15,7 @@ Run the evaluation after adding manually judged article IDs to
 `experiments/evaluation/bm25_queries.json`:
 
 ```bash
-PYTHONPATH=data-pipeline .venv/bin/python -m bm25.evaluate
+PYTHONPATH=. .venv/bin/python experiments/evaluation/bm25_evaluate.py
 ```
 
 The evaluator reports Recall@5 and MRR. An empty `relevant_articles` list is

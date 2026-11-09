@@ -8,7 +8,7 @@ from typing import Any
 import numpy as np
 
 from apps.core.retrieval_config import PipelineConfig
-from .io_utils import write_jsonl
+from .text_preprocess import write_jsonl
 
 
 def embed_chunks(chunks: list[dict[str, Any]], config: PipelineConfig) -> np.ndarray:

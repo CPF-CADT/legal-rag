@@ -5,10 +5,9 @@ from __future__ import annotations
 from typing import Any
 
 from .chroma_index import build_index
-from .chunking import build_chunks
+from .text_preprocess import build_chunks, prepare_articles
 from apps.core.retrieval_config import PipelineConfig
 from .embeddings import embed_chunks
-from .prepare_articles import prepare_articles
 
 
 def run_pipeline(config: PipelineConfig) -> dict[str, Any]:

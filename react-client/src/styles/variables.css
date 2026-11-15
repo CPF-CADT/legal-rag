@@ -1,1 +1,18 @@
-:root { --legal-blue: #1d4ed8; }
+:root {
+  --navy: #152e42;
+  --navy-deep: #102638;
+  --accent: #287568;
+  --canvas: #f6f8fa;
+  --paper: #fff;
+  --ink: #203647;
+  --muted: #60717e;
+  --line: #e1e8ed;
+  --legal-blue: #234d70;
+  --text-small: 0.75rem;
+  --text-body: 0.875rem;
+  --text-reading: 1rem;
+  --text-heading: 1.875rem;
+  --space: 8px;
+  --radius: 16px;
+  --shadow: 0 8px 32px #152e4206;
+}

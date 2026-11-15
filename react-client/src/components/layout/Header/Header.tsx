@@ -1,18 +1,44 @@
-import { Link, NavLink } from 'react-router-dom'
-
-const navClass = ({ isActive }: { isActive: boolean }) =>
-  `rounded-md px-3 py-2 text-sm font-medium transition ${isActive ? 'bg-slate-100 text-blue-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`
-
+import { Link, NavLink } from "react-router-dom";
+const links = [
+  ["/", "⌂", "ទំព័រដើម"],
+  ["/chat", "↗", "សួរ DOMROV"],
+  ["/search", "⌕", "ស្វែងរកច្បាប់"],
+  ["/procedures", "▤", "សេវាសាធារណៈ"],
+  ["/saved", "☆", "ការងាររក្សាទុក"],
+];
 export function Header() {
   return (
-    <header className="border-b border-slate-200 bg-white">
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
-        <Link to="/" className="flex items-center gap-2 text-xl font-bold tracking-tight text-blue-800"><span className="grid h-9 w-9 place-items-center rounded-lg bg-blue-700 text-sm text-white">LR</span>LegalRAG</Link>
-        <nav aria-label="Main navigation" className="flex items-center gap-1">
-          <NavLink to="/" end className={navClass}>សួរសំណួរ</NavLink>
-          <NavLink to="/search" className={navClass}>ស្វែងរកច្បាប់</NavLink>
-        </nav>
+    <aside className="sidebar">
+      <Link className="brand" to="/">
+        <span className="brand-mark">ដ</span>
+        <span>
+          DOMROV<small>ច្បាស់លាស់ រាល់ជំហាន</small>
+        </span>
+      </Link>
+      <p className="nav-caption">កន្លែងធ្វើការរបស់អ្នក</p>
+      <nav aria-label="ការរុករកចម្បង">
+        {links.map(([to, icon, label]) => (
+          <NavLink
+            key={to}
+            to={to}
+            end={to === "/"}
+            className={({ isActive }) =>
+              isActive ? "nav-item active" : "nav-item"
+            }
+          >
+            <span aria-hidden="true">{icon}</span>
+            {label}
+          </NavLink>
+        ))}
+      </nav>
+      <div className="sidebar-note">
+        <span className="small-label">ចាប់ផ្តើមដោយមានប្រភព</span>
+        <p>យល់ពីច្បាប់។ ត្រៀមខ្លួនសម្រាប់ជំហានបន្ទាប់។</p>
+        <Link to="/procedures">ស្វែងយល់ពីសេវា →</Link>
       </div>
-    </header>
-  )
+      <div className="local-note">
+        ◉ កន្លែងធ្វើការផ្ទាល់ខ្លួន<small>គ្មានគណនី ឬការរក្សាទុកលើ cloud</small>
+      </div>
+    </aside>
+  );
 }
